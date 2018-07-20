@@ -10,11 +10,15 @@ import UIKit
 
 class ToDoListViewController: UITableViewController {
 
-    let itemArray = ["Learn Core Data", "Implement Game Browser screen", "Fix start index bugs"];
+    var itemArray = ["Learn Core Data", "Implement Game Browser screen", "Fix start index bugs"];
+    let userDefaults = UserDefaults.standard;
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+        if let items = userDefaults.array(forKey: "todos") as? [String] {
+            itemArray = items;
+        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -44,6 +48,27 @@ class ToDoListViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
         
+    }
+    
+    //MARK - Add new items
+    
+    
+    @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
+        let alert = UIAlertController.init(title: "Add new todoey item", message: "", preferredStyle: .alert);
+        var alertTextfield = UITextField();
+        alert.addTextField { (textfield) in
+            textfield.placeholder = "Add title of new todoey";
+            alertTextfield = textfield;
+        }
+        let action = UIAlertAction.init(title: "Add item", style: .default) { (action) in
+            if alertTextfield.text != "" {
+                self.itemArray.append(alertTextfield.text!);
+                self.userDefaults.setValue(self.itemArray, forKey: "todos");
+                self.tableView.reloadData();
+            }
+        }
+        alert.addAction(action);
+        present(alert, animated: true, completion: nil);
     }
 }
 
